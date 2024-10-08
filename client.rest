@@ -1,0 +1,15 @@
+@baseUrl=http://localhost:3000
+
+# @name AppControllerGetHello
+GET {{baseUrl}}/home
+
+### ConceitosManualController
+
+# @name ConceitosManualController
+GET {{baseUrl}}/concepts-manual
+
+
+### ConceptsAutomaticController
+
+# @name ConceptsAutomaticController
+GET {{baseUrl}}/concepts-automatic
