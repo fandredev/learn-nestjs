@@ -1,38 +1,10 @@
-import {
-  IsBoolean,
-  IsDate,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-import { MessageEntity } from '../entities/message-entity';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateMessageDTO } from './create-message.dto';
+import { IsBoolean, IsOptional } from 'class-validator';
 
-type UpdateRecadoDTO = Partial<MessageEntity>;
-
-export class UpdateMessageDTO implements UpdateRecadoDTO {
-  @IsDate()
-  @IsOptional()
-  date?: Date;
-
-  @IsString()
-  @IsOptional()
-  readonly of: string;
-
-  @IsString()
-  @IsOptional()
-  readonly to: string;
-
-  @IsOptional()
+// Isso aqui basicamente extende toda a class CreateMessage
+export class UpdateMessageDTO extends PartialType(CreateMessageDTO) {
   @IsBoolean()
-  read?: boolean;
-
-  @IsString({
-    message: 'the `text` needs a valid text',
-  })
-  @IsNotEmpty()
-  @MinLength(5)
-  @MaxLength(255)
-  readonly text: string;
+  @IsOptional()
+  readonly read?: boolean;
 }
