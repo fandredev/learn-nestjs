@@ -11,18 +11,16 @@ import {
   Query,
 } from '@nestjs/common';
 import { MessagesService } from './messages.service';
-
-interface PaginationProps {
-  limit: string;
-  offset: string;
-}
+import { CreateMessageDTO } from './dto/create-message.dto';
+import { UpdateMessageDTO } from './dto/update-message.dto';
+import { PaginationDTO } from './dto/pagination.dto';
 
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  findAll(@Query() pagination: PaginationProps) {
+  findAll(@Query() pagination: PaginationDTO) {
     return this.messagesService.findAll();
   }
 
@@ -32,13 +30,13 @@ export class MessagesController {
   }
 
   @Post()
-  create(@Body() body: any) {
-    return this.messagesService.create(body);
+  create(@Body() messageBody: CreateMessageDTO) {
+    return this.messagesService.create(messageBody);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any) {
-    return this.messagesService.update(id, body);
+  update(@Param('id') id: string, @Body() messageBody: UpdateMessageDTO) {
+    return this.messagesService.update(id, messageBody);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
