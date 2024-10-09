@@ -17,18 +17,24 @@ POST {{baseUrl}}/messages
 Content-Type: application/json
 
 {
-  "message": "This is a message",
-  "user":"Felipe"
+  "text": "Novo recado",
+  "of": "Júlia",
+  "to": "Felipe",
+  "read": false,
+  "date": "2024-10-09T22:41:57.408Z"
 }
 ###
 
 # @name UpdateMessage
-PATCH {{baseUrl}}/messages/333
+PATCH {{baseUrl}}/messages/1
 Content-Type: application/json
 
 {
-  "message": "This is a message",
-  "user":"Júlia"
+  "text": "Recado atualizado",
+  "of": "Júlia",
+  "to": "Felipe",
+  "read": false,
+  "date": "2024-10-09T22:41:57.408Z"
 }
 
 ###

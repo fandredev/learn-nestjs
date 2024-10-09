@@ -10,12 +10,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { Message, MessagesService } from './messages.service';
-
-interface MessageResponse {
-  message: string;
-  user: string;
-}
+import { MessagesService } from './messages.service';
 
 interface PaginationProps {
   limit: string;
@@ -27,34 +22,28 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  findAll(@Query() pagination: PaginationProps): Message[] {
-    console.log(pagination);
-
-    return this.messagesService.findAllMessages();
+  findAll(@Query() pagination: PaginationProps) {
+    return this.messagesService.findAll();
   }
 
-  @Get(':id') // Create a dynamic route
+  @Get(':id')
   findOne(@Param('id') id: string) {
-    // Take the value ID
-    return this.messagesService.findEspecificMessage(id);
+    return this.messagesService.findOne(id);
   }
 
   @Post()
-  create(@Body() body: MessageResponse) {
-    return {};
+  create(@Body() body: any) {
+    return this.messagesService.create(body);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: MessageResponse) {
-    return {
-      id,
-      ...body,
-    };
+  update(@Param('id') id: string, @Body() body: any) {
+    return this.messagesService.update(id, body);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return 'Delete id' + id;
+    return this.messagesService.remove(id);
   }
 }
