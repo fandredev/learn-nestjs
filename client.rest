@@ -1,15 +1,37 @@
 @baseUrl=http://localhost:3000
 
-# @name AppControllerGetHello
-GET {{baseUrl}}/home
+# @name ReadAllMessages
+GET {{baseUrl}}/messages
+?limit=10
+&offset=1
 
-### ConceitosManualController
+### 
 
-# @name ConceitosManualController
-GET {{baseUrl}}/concepts-manual
+# @name ReadEspecificMessage
+GET {{baseUrl}}/messages/1
 
+### 
 
-### ConceptsAutomaticController
+# @name CreateMessage
+POST {{baseUrl}}/messages
+Content-Type: application/json
 
-# @name ConceptsAutomaticController
-GET {{baseUrl}}/concepts-automatic
+{
+  "message": "This is a message",
+  "user":"Felipe"
+}
+###
+
+# @name UpdateMessage
+PATCH {{baseUrl}}/messages/333
+Content-Type: application/json
+
+{
+  "message": "This is a message",
+  "user":"Júlia"
+}
+
+###
+
+# @name DeleteMessage
+DELETE {{baseUrl}}/messages/1
