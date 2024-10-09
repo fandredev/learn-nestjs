@@ -19,9 +19,7 @@ Content-Type: application/json
 {
   "text": "Novo recado",
   "of": "Júlia",
-  "to": "Felipe",
-  "read": false,
-  "date": "2024-10-09T22:41:57.408Z"
+  "to": "Felipe"
 }
 ###
 
@@ -32,9 +30,7 @@ Content-Type: application/json
 {
   "text": "Recado atualizado",
   "of": "Júlia",
-  "to": "Felipe",
-  "read": false,
-  "date": "2024-10-09T22:41:57.408Z"
+  "to": "Felipe"
 }
 
 ###
