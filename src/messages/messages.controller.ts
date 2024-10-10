@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -13,19 +14,18 @@ import {
 import { MessagesService } from './messages.service';
 import { CreateMessageDTO } from './dto/create-message.dto';
 import { UpdateMessageDTO } from './dto/update-message.dto';
-import { PaginationDTO } from './dto/pagination.dto';
 
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  findAll(@Query() pagination: PaginationDTO) {
+  findAll(@Query() pagination: any) {
     return this.messagesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.messagesService.findOne(id);
   }
 
@@ -35,13 +35,16 @@ export class MessagesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() messageBody: UpdateMessageDTO) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() messageBody: UpdateMessageDTO,
+  ) {
     return this.messagesService.update(id, messageBody);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.messagesService.remove(id);
   }
 }

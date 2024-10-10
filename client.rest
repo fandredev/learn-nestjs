@@ -28,9 +28,9 @@ PATCH {{baseUrl}}/messages/1
 Content-Type: application/json
 
 {
-  "text": "Recado atualizado",
-  "of": "Júlia",
-  "to": "Felipe"
+  "of": "aodiuadhiajokdada",
+  "to": "wqwqwqwqwqwq",
+  "text": "Oláaa"
 }
 
 ###
