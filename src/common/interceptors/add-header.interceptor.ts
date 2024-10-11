@@ -1,6 +1,12 @@
-import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 
 // Interceptor para adicionar um header na resposta na rota
+@Injectable()
 export class AddHeaderInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
     const response = context.switchToHttp().getResponse(); // pega a resposta

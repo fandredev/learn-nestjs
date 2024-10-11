@@ -3,10 +3,12 @@ import {
   ExecutionContext,
   CallHandler,
   Logger,
+  Injectable,
 } from '@nestjs/common';
 import { tap } from 'rxjs';
 
 // Impact on performance
+@Injectable()
 export class TimingConnectionInterceptor implements NestInterceptor {
   private logger = new Logger();
 

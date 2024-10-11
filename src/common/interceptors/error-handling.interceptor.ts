@@ -3,10 +3,12 @@ import {
   ExecutionContext,
   CallHandler,
   Logger,
+  Injectable,
 } from '@nestjs/common';
 import { catchError, throwError } from 'rxjs';
 
-// Impact on performance
+// Impact on performance]
+@Injectable()
 export class ErrorHandlingInterceptor implements NestInterceptor {
   private logger = new Logger();
 
