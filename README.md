@@ -1,10 +1,16 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Description
+
+- Studying NestJS Fundamentals [https://docs.nestjs.com/]
+
+  <br>
 
 # Stack used
 
-<img src="https://skillicons.dev/icons?i=typescript,nestjs,nodejs,postgresql,jest,pnpm,git&theme=dark" alt="typescript,nestjs,nodejs,postgresql,jest,pnpm,git" />
+<p align="center">
+  <a href="https://go-skill-icons.vercel.app/">
+    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,nestjs,nodejs,postgresql,jest,pnpm,git" />
+  </a>
+</p>
 
 ### Other tools:
 
