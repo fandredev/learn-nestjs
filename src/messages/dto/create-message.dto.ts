@@ -1,7 +1,13 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
-import { MessageEntity } from '../entities/message-entity';
+import {
+  IsNotEmpty,
+  IsPositive,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { Message } from '../entities/message-entity';
 
-type CreateRecadoDTO = Pick<MessageEntity, 'text' | 'of' | 'to'>;
+type CreateRecadoDTO = Pick<Message, 'text'>;
 
 export class CreateMessageDTO implements CreateRecadoDTO {
   @IsString({
@@ -12,11 +18,9 @@ export class CreateMessageDTO implements CreateRecadoDTO {
   @MaxLength(255)
   readonly text: string;
 
-  @IsString()
-  @IsNotEmpty()
-  readonly of: string;
+  @IsPositive()
+  readonly ofId: number;
 
-  @IsString()
-  @IsNotEmpty()
-  readonly to: string;
+  @IsPositive()
+  readonly toId: number;
 }
