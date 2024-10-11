@@ -9,21 +9,19 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
+import { AuthTokenInterceptor } from 'src/common/interceptors/auth-token.interceptor';
 
 @Controller('person')
 export class PersonController {
   constructor(private readonly personService: PersonService) {}
 
-  @Post()
-  create(@Body() createPersonDto: CreatePersonDto) {
-    return this.personService.create(createPersonDto);
-  }
-
   @Get()
+  @UseInterceptors(AuthTokenInterceptor)
   findAll() {
     return this.personService.findAll();
   }
@@ -31,6 +29,11 @@ export class PersonController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.personService.findOne(id);
+  }
+
+  @Post()
+  create(@Body() createPersonDto: CreatePersonDto) {
+    return this.personService.create(createPersonDto);
   }
 
   @Patch(':id')
