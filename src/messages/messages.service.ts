@@ -5,6 +5,7 @@ import { CreateMessageDTO } from './dto/create-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PersonService } from 'src/person/person.service';
+import { PaginationDTO } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class MessagesService {
@@ -14,9 +15,13 @@ export class MessagesService {
     private readonly personService: PersonService,
   ) {}
 
-  async findAll() {
+  async findAll(pagination?: PaginationDTO) {
+    const { limit, offset } = pagination;
+
     const messages = await this.messageRepository.find({
       relations: ['to', 'of'],
+      take: limit, // Quantos registros quero exibir
+      skip: offset, // A partir de qual registro quero exibir
       order: {
         id: 'desc',
       },
@@ -78,20 +83,14 @@ export class MessagesService {
   }
 
   async update(id: number, data: UpdateMessageDTO) {
-    const partialUpdateMessageDTO = {
-      read: data?.read,
-      text: data?.text,
-    };
-    // .preload - Atualiza as coisas
+    const message = await this.findOne(id);
 
-    const messageToUpdated = await this.messageRepository.preload({
-      id,
-      ...partialUpdateMessageDTO,
-    });
+    message.text = data.text ?? message.text;
+    message.read = data.read ?? message.read;
 
-    if (!messageToUpdated) throw new NotFoundException('Message not found');
+    await this.messageRepository.save(message);
 
-    return this.messageRepository.save(messageToUpdated);
+    return message;
   }
   async remove(id: number) {
     const messageToDeleted = await this.messageRepository.findOneBy({

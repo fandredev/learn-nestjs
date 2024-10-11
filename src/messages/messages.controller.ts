@@ -14,14 +14,15 @@ import {
 import { MessagesService } from './messages.service';
 import { CreateMessageDTO } from './dto/create-message.dto';
 import { UpdateMessageDTO } from './dto/update-message.dto';
+import { PaginationDTO } from 'src/common/dto/pagination.dto';
 
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  findAll(@Query() pagination: any) {
-    return this.messagesService.findAll();
+  findAll(@Query() pagination: PaginationDTO) {
+    return this.messagesService.findAll(pagination);
   }
 
   @Get(':id')
