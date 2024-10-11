@@ -6,9 +6,6 @@ import {
 
 export default class ParseIntIdPipe implements PipeTransform {
   transform(value: string, metadata: ArgumentMetadata) {
-    console.log(metadata, 'metadata');
-    console.log(value, 'value');
-
     if (metadata.type !== 'param' || metadata.data !== 'id') {
       return value;
     }
