@@ -4,16 +4,35 @@ import { UpdateMessageDTO } from './dto/update-message.dto';
 import { CreateMessageDTO } from './dto/create-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PersonService } from 'src/person/person.service';
 
 @Injectable()
 export class MessagesService {
   constructor(
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
+    private readonly personService: PersonService,
   ) {}
 
   async findAll() {
-    const messages = await this.messageRepository.find();
+    const messages = await this.messageRepository.find({
+      relations: ['to', 'of'],
+      order: {
+        id: 'desc',
+      },
+      select: {
+        to: {
+          id: true,
+          name: true,
+          email: true,
+        },
+        of: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    });
 
     return messages;
   }
@@ -23,6 +42,7 @@ export class MessagesService {
       where: {
         id,
       },
+      relations: ['to', 'of'],
     });
     if (!message) throw new NotFoundException('Message not found');
 
@@ -30,15 +50,31 @@ export class MessagesService {
   }
 
   async create(data: CreateMessageDTO) {
+    const { toId, ofId } = data;
+
+    const personToSendMessage = await this.personService.findOne(toId);
+    const personToReceiveMessage = await this.personService.findOne(ofId);
+
     const newMessage = {
       read: false,
       date: new Date(),
-      ...data,
+      text: data.text,
+      to: personToSendMessage,
+      of: personToReceiveMessage,
     };
 
     const messageCreated = this.messageRepository.create(newMessage);
+    await this.messageRepository.save(messageCreated);
 
-    return this.messageRepository.save(messageCreated);
+    return {
+      ...messageCreated,
+      to: {
+        id: messageCreated.to.id,
+      },
+      of: {
+        id: messageCreated.of.id,
+      },
+    };
   }
 
   async update(id: number, data: UpdateMessageDTO) {
