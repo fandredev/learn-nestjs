@@ -26,12 +26,13 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  @UseInterceptors(AddHeaderInterceptor, TimingConnectionInterceptor)
+  @UseInterceptors(TimingConnectionInterceptor)
   findAll(@Query() pagination: PaginationDTO) {
     return this.messagesService.findAll(pagination);
   }
 
   @Get(':id')
+  @UseInterceptors(AddHeaderInterceptor)
   findOne(@Param('id') id: number) {
     return this.messagesService.findOne(id);
   }
