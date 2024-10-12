@@ -12,11 +12,10 @@ import HashUtils from './utils/hash-password';
 
 @Injectable()
 export class PersonService {
-  private hashUtils: HashUtils = new HashUtils();
-
   constructor(
     @InjectRepository(Person)
     private readonly personRepository: Repository<Person>,
+    private readonly hashUtils: HashUtils,
   ) {}
 
   async findAll() {
