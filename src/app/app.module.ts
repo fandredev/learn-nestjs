@@ -9,6 +9,7 @@ import { MessagesModule } from 'src/messages/messages.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PersonModule } from 'src/person/person.module';
 import { SimpleMiddleware } from 'src/middlewares/simple.middleware';
+// import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
 
 @Module({
   imports: [
@@ -26,6 +27,12 @@ import { SimpleMiddleware } from 'src/middlewares/simple.middleware';
     }),
   ],
   controllers: [AppController],
+  // providers: [ // Coloquem isso no módulo que vocês querem proteger
+  //   {
+  //     provide: 'APP_GUARD',
+  //     useClass: IsAdminGuard,
+  //   },
+  // ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
