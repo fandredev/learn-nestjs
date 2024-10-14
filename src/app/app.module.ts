@@ -13,10 +13,12 @@ import { ConfigModule } from '@nestjs/config';
 // import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
 
 import * as Joi from '@hapi/joi';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     MessagesModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
@@ -27,6 +29,9 @@ import * as Joi from '@hapi/joi';
         DATABASE_PASSWORD: Joi.string().required(),
         DATABASE_AUTOLOADENTITIES: Joi.number().min(0).max(1).default(0),
         DATABASE_SYNCRONIZE: Joi.number().min(0).max(1).default(0),
+        enviroment: Joi.string()
+          .default(process.env.NODE_ENV || 'development')
+          .valid('development', 'production', 'test'),
       }),
     }),
     PersonModule,
