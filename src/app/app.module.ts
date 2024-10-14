@@ -14,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import * as Joi from '@hapi/joi';
 import { AuthModule } from 'src/auth/auth.module';
+import jwtConfig from 'src/auth/config/jwt.config';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [jwtConfig],
       validationSchema: Joi.object({
         DATABASE_HOST: Joi.string().required(),
         DATABASE_PORT: Joi.number().default(5432),
