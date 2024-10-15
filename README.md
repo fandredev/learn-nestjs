@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://go-skill-icons.vercel.app/">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,react,nestjs,postgres,docker" alt="typescript,react,nestjs,postgres,docker" />
+    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,react,nestjs,postgres,docker,swagger" alt="typescript,react,nestjs,postgres,docker,swagger" />
   </a>
 </p>
 
@@ -16,6 +16,7 @@
 - [Eslint](https://prettier.io/)
 - [pgadmin](https://www.pgadmin.org/download/)
 - [postman](https://www.postman.com/)
+- [jwt](https://jwt.io/)
 
 ### Details
 
