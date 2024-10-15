@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Message } from './entities/message-entity';
 import { UpdateMessageDTO } from './dto/update-message.dto';
 import { CreateMessageDTO } from './dto/create-message.dto';
@@ -6,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PersonService } from 'src/person/person.service';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
+import { TokenPayloadDTO } from 'src/auth/dto/token-payload.dto';
 
 @Injectable()
 export class MessagesService {
@@ -54,11 +59,13 @@ export class MessagesService {
     return message;
   }
 
-  async create(data: CreateMessageDTO) {
-    const { toId, ofId } = data;
+  async create(data: CreateMessageDTO, tokenPayload: TokenPayloadDTO) {
+    const { toId } = data;
 
     const personToSendMessage = await this.personService.findOne(toId);
-    const personToReceiveMessage = await this.personService.findOne(ofId);
+    const personToReceiveMessage = await this.personService.findOne(
+      +tokenPayload.sub,
+    );
 
     const newMessage = {
       read: false,
@@ -75,15 +82,24 @@ export class MessagesService {
       ...messageCreated,
       to: {
         id: messageCreated.to.id,
+        name: messageCreated.to.name,
       },
       of: {
         id: messageCreated.of.id,
+        name: messageCreated.of.name,
       },
     };
   }
 
-  async update(id: number, data: UpdateMessageDTO) {
+  async update(
+    id: number,
+    data: UpdateMessageDTO,
+    tokenPayload: TokenPayloadDTO,
+  ) {
     const message = await this.findOne(id);
+
+    if (message.of.id !== +tokenPayload.sub)
+      throw new ForbiddenException('This message is not yours');
 
     message.text = data.text ?? message.text;
     message.read = data.read ?? message.read;
@@ -92,10 +108,11 @@ export class MessagesService {
 
     return message;
   }
-  async remove(id: number) {
-    const messageToDeleted = await this.messageRepository.findOneBy({
-      id,
-    });
+  async remove(id: number, tokenPayload: TokenPayloadDTO) {
+    const messageToDeleted = await this.findOne(id);
+
+    if (messageToDeleted.of.id !== +tokenPayload.sub)
+      throw new ForbiddenException('This message is not yours');
 
     if (!messageToDeleted) throw new NotFoundException('Message not found');
 

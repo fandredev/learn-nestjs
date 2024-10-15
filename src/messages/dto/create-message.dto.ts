@@ -19,8 +19,5 @@ export class CreateMessageDTO implements CreateRecadoDTO {
   readonly text: string;
 
   @IsPositive()
-  readonly ofId: number;
-
-  @IsPositive()
   readonly toId: number;
 }

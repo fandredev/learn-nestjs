@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -82,14 +83,17 @@ export class PersonService {
       dataPeople['password'] = passwordHash;
     }
 
-    const personToUpdate = await this.personRepository.preload({
+    const person = await this.personRepository.preload({
       id,
       ...dataPeople,
     });
 
-    if (!personToUpdate)
-      throw new NotFoundException(`Not found person with ID: ${id}`);
-    return this.personRepository.save(personToUpdate);
+    if (!person) throw new NotFoundException(`Not found person with ID: ${id}`);
+
+    if (person.id !== +tokenPayload.sub) {
+      throw new ForbiddenException('You are not allowed to update this user');
+    }
+    return this.personRepository.save(person);
   }
 
   async remove(id: number, tokenPayload: TokenPayloadDTO) {
@@ -98,6 +102,10 @@ export class PersonService {
     });
 
     if (!person) throw new NotFoundException(`Not found person with ID: ${id}`);
+
+    if (person.id !== +tokenPayload.sub) {
+      throw new ForbiddenException('You are not allowed to update this user');
+    }
 
     return this.personRepository.remove(person);
   }
