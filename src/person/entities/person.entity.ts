@@ -36,6 +36,9 @@ export class Person {
   @OneToMany(() => Message, (message) => message.to)
   message_received: Message[];
 
+  @Column({ default: true })
+  active: boolean;
+
   @CreateDateColumn()
   createdAt?: Date;
 

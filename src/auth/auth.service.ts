@@ -54,10 +54,11 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const person = await this.personRepository.findOneBy({
       email: loginDto.email,
+      active: true,
     });
 
     if (!person) {
-      throw new UnauthorizedException('Person not found');
+      throw new UnauthorizedException('Person not authorized');
     }
 
     const passwordIsValid = await this.hashProtocolService.compare(
@@ -80,9 +81,10 @@ export class AuthService {
 
       const user = await this.personRepository.findOneBy({
         id: sub,
+        active: true,
       });
 
-      if (!user) throw new Error('Person not found');
+      if (!user) throw new Error('Person not authorized');
 
       return this.createTokens(user);
     } catch (error) {
