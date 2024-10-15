@@ -10,11 +10,18 @@ import {
   HttpCode,
   HttpStatus,
   UseInterceptors,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { AuthTokenInterceptor } from 'src/common/interceptors/auth-token.interceptor';
+import { AuthTokenGuard } from 'src/auth/guards/auth-token.guard';
+import { Request } from 'express';
+import { REQUEST_TOKEN_PAYLOAD_KEY } from 'src/auth/auth.constants';
+import { TokenPayloadParam } from 'src/auth/params/token-payload.param';
+import { TokenPayloadDTO } from 'src/auth/dto/token-payload.dto';
 
 @Controller('person')
 export class PersonController {
@@ -22,10 +29,13 @@ export class PersonController {
 
   @Get()
   @UseInterceptors(AuthTokenInterceptor)
-  findAll() {
+  findAll(@Req() req: Request) {
+    console.log(req[REQUEST_TOKEN_PAYLOAD_KEY]);
+
     return this.personService.findAll();
   }
 
+  @UseGuards(AuthTokenGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.personService.findOne(id);
@@ -36,17 +46,23 @@ export class PersonController {
     return this.personService.create(createPersonDto);
   }
 
+  @UseGuards(AuthTokenGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePersonDto: UpdatePersonDto,
+    @TokenPayloadParam() tokenPayload: TokenPayloadDTO,
   ) {
-    return this.personService.update(id, updatePersonDto);
+    return this.personService.update(id, updatePersonDto, tokenPayload);
   }
 
+  @UseGuards(AuthTokenGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.personService.remove(id);
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @TokenPayloadParam() tokenPayload: TokenPayloadDTO,
+  ) {
+    return this.personService.remove(id, tokenPayload);
   }
 }

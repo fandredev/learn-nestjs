@@ -23,6 +23,6 @@ import jwtConfig from './config/jwt.config';
     },
     AuthService,
   ],
-  exports: [HashProtocolService],
+  exports: [HashProtocolService, JwtModule],
 })
 export class AuthModule {}
