@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { HashProtocolService } from './hashing/hashing.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,39 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
+
+  private async signJWTAsync<T>(sub: number, expiresIn: number, payload?: T) {
+    return await this.jwtService.signAsync(
+      {
+        sub,
+        ...payload,
+      },
+      {
+        secret: this.configService.get<string>('jwt.secret'),
+        audience: this.configService.get<string>('jwt.audience'),
+        issuer: this.configService.get<string>('jwt.issuer'),
+        expiresIn,
+      },
+    );
+  }
+
+  private async createTokens(person: Person) {
+    const accessToken = await this.signJWTAsync<Partial<Person>>(
+      person.id,
+      this.configService.get<number>('jwt.jwtExpiresIn'),
+      { email: person.email },
+    );
+
+    const refreshToken = await this.signJWTAsync(
+      person.id,
+      this.configService.get<number>('jwt.jwtRefreshExpiresIn'),
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
 
   async login(loginDto: LoginDto) {
     const person = await this.personRepository.findOneBy({
@@ -35,22 +69,24 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const accessToken = await this.jwtService.signAsync(
-      {
-        sub: person.id,
-        email: person.email,
-      },
-      {
-        secret: this.configService.get<string>('jwt.secret'),
-        expiresIn: this.configService.get<number>('jwt.jwtExpiresIn'),
-        audience: this.configService.get<string>('jwt.audience'),
-        issuer: this.configService.get<string>('jwt.issuer'),
-      },
-    );
+    return this.createTokens(person);
+  }
 
-    return {
-      message: 'Login success',
-      accessToken,
-    };
+  async refreshTokens(refreshTokenDto: RefreshTokenDto) {
+    try {
+      const { sub } = await this.jwtService.verifyAsync(
+        refreshTokenDto.refreshToken,
+      );
+
+      const user = await this.personRepository.findOneBy({
+        id: sub,
+      });
+
+      if (!user) throw new Error('Person not found');
+
+      return this.createTokens(user);
+    } catch (error) {
+      throw new UnauthorizedException(error.message || 'Invalid refresh token');
+    }
   }
 }
