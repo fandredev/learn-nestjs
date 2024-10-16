@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   UseGuards,
   Req,
+  UploadedFile,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -22,6 +23,10 @@ import { Request } from 'express';
 import { REQUEST_TOKEN_PAYLOAD_KEY } from 'src/auth/auth.constants';
 import { TokenPayloadParam } from 'src/auth/params/token-payload.param';
 import { TokenPayloadDTO } from 'src/auth/dto/token-payload.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+import * as path from 'path';
+import * as fs from 'fs/promises';
 
 @Controller('person')
 export class PersonController {
@@ -64,5 +69,32 @@ export class PersonController {
     @TokenPayloadParam() tokenPayload: TokenPayloadDTO,
   ) {
     return this.personService.remove(id, tokenPayload);
+  }
+
+  @UseGuards(AuthTokenGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('upload-picture')
+  async uploadPicure(
+    @UploadedFile() file: Express.Multer.File,
+    @TokenPayloadParam() tokenPayload: TokenPayloadDTO,
+  ) {
+    const fileExtension = path
+      .extname(file.originalname)
+      .toLowerCase()
+      .substring(1);
+
+    const fileName = `${tokenPayload.sub}.${fileExtension}`;
+    const fileFullPath = path.resolve(process.cwd(), 'pictures', fileName);
+
+    await fs.writeFile(fileFullPath, file.buffer);
+
+    return {
+      filename: file.filename,
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      size: file.size,
+      buffer: {},
+      mimetype: file.mimetype,
+    };
   }
 }
