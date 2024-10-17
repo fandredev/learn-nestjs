@@ -4,7 +4,6 @@
 
 # Stack used
 
-
   <a href="https://go-skill-icons.vercel.app/">
     <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,react,nestjs,postgres,docker,swagger" alt="typescript,react,nestjs,postgres,docker,swagger" />
   </a>
@@ -21,7 +20,7 @@
 
 Please, check the .tool-versions before use this project to show versions that i used.
 
-I use pnpm to construct this project. feel free to use another package manager.
+I use pnpm to construct this project. Please, feel free to use another package manager. You can also use the collection in the root project to view all request using Postman.
 
 ## Clone this repo
 
