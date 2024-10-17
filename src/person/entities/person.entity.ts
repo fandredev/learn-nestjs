@@ -39,6 +39,9 @@ export class Person {
   @Column({ default: true })
   active: boolean;
 
+  @Column({ default: '' })
+  picture: string;
+
   @CreateDateColumn()
   createdAt?: Date;
 
