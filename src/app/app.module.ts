@@ -15,6 +15,8 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import { AuthModule } from 'src/auth/auth.module';
 import jwtConfig from 'src/auth/config/jwt.config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -46,6 +48,9 @@ import jwtConfig from 'src/auth/config/jwt.config';
       password: process.env.DATABASE_PASSWORD,
       autoLoadEntities: Boolean(process.env.DATABASE_AUTOLOADENTITIES), // Carrega entidades sem precisar especificar elas
       synchronize: Boolean(process.env.DATABASE_SYNCRONIZE), // Sincroniza com o DB. Não deve ser usado em produção!
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'pictures'), // Raiz do projeto servirá arquivos estaticos
     }),
   ],
   controllers: [AppController],
