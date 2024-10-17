@@ -5,7 +5,7 @@
 # Stack used
 
   <a href="https://go-skill-icons.vercel.app/">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,react,nestjs,postgres,docker,swagger" alt="typescript,react,nestjs,postgres,docker,swagger" />
+    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,nestjs,postgres,docker,swagger" alt="typescript,nestjs,postgres,docker,swagger" />
   </a>
 
 ### Other tools:
@@ -15,6 +15,8 @@
 - [pgadmin](https://www.pgadmin.org/download/)
 - [postman](https://www.postman.com/)
 - [jwt](https://jwt.io/)
+- [cors](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/CORS)
+- [helmet](https://helmetjs.github.io/)
 
 ### Details
 

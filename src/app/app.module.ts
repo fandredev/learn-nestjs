@@ -17,6 +17,8 @@ import { AuthModule } from 'src/auth/auth.module';
 import jwtConfig from 'src/auth/config/jwt.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -52,14 +54,27 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'pictures'), // Raiz do projeto servirá arquivos estaticos
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 10000, // Quanto tempo
+        limit: 10, // Máximo de requisições durante o TTL (60000ms, 60s)
+        blockDuration: 5000, // Tempo de bloqueio caso ela estore esse limite
+      },
+    ]),
   ],
   controllers: [AppController],
-  // providers: [ // Coloquem isso no módulo que vocês querem proteger
-  //   {
-  //     provide: 'APP_GUARD',
-  //     useClass: IsAdminGuard,
-  //   },
-  // ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+
+    //  Colocar isso no módulo que quero querem proteger
+    // {
+    //   provide: 'APP_GUARD',
+    //   useClass: IsAdminGuard,
+    // },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
