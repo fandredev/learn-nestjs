@@ -23,6 +23,7 @@ import { TimingConnectionInterceptor } from 'src/common/interceptors/timing-conn
 import { AuthTokenGuard } from 'src/auth/guards/auth-token.guard';
 import { TokenPayloadParam } from 'src/auth/params/token-payload.param';
 import { TokenPayloadDTO } from 'src/auth/dto/token-payload.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('messages')
 @UsePipes(ParseIntIdPipe)
@@ -43,6 +44,7 @@ export class MessagesController {
 
   @Post()
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
   create(
     @Body() messageBody: CreateMessageDTO,
     @TokenPayloadParam() tokenPayload: TokenPayloadDTO,
@@ -52,6 +54,7 @@ export class MessagesController {
 
   @Patch(':id')
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
   update(
     @Param('id') id: number,
     @Body() messageBody: UpdateMessageDTO,
@@ -61,6 +64,7 @@ export class MessagesController {
   }
 
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(
