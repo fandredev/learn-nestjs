@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { PersonService } from 'src/person/person.service';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
 import { TokenPayloadDTO } from 'src/auth/dto/token-payload.dto';
+import { ResponseMessageDTO } from './dto/response-message.dto';
 
 @Injectable()
 export class MessagesService {
@@ -20,7 +21,7 @@ export class MessagesService {
     private readonly personService: PersonService,
   ) {}
 
-  async findAll(pagination?: PaginationDTO) {
+  async findAll(pagination?: PaginationDTO): Promise<ResponseMessageDTO[]> {
     const { limit, offset } = pagination;
 
     const messages = await this.messageRepository.find({
@@ -47,7 +48,7 @@ export class MessagesService {
     return messages;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<ResponseMessageDTO> {
     const message = await this.messageRepository.findOne({
       where: {
         id,
@@ -116,6 +117,7 @@ export class MessagesService {
 
     if (!messageToDeleted) throw new NotFoundException('Message not found');
 
-    return this.messageRepository.remove(messageToDeleted);
+    await this.messageRepository.delete(messageToDeleted.id);
+    return messageToDeleted;
   }
 }
