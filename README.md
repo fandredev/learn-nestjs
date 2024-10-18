@@ -1,4 +1,3 @@
-
 # Description
 
 - Studying NestJS Fundamentals [https://docs.nestjs.com/]
@@ -7,11 +6,10 @@
 
 ![image](https://github.com/user-attachments/assets/25e58d6b-6c02-41b4-b6dd-d6e1d6c00677)
 
-
 # Stack used
 
   <a href="https://go-skill-icons.vercel.app/">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,nodejs,nestjs,postgres,docker,swagger" alt="typescript,nodejs,nestjs,postgres,docker,swagger" />
+    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,nodejs,nestjs,jest,postgres,docker,swagger" alt="typescript,nodejs,nestjs,jest,postgres,docker,swagger" />
   </a>
 
 ### Other tools:
