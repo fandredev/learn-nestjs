@@ -11,46 +11,44 @@ import {
   HttpStatus,
   UseInterceptors,
   UseGuards,
-  Req,
   UploadedFile,
   ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { AuthTokenInterceptor } from 'src/common/interceptors/auth-token.interceptor';
 import { AuthTokenGuard } from 'src/auth/guards/auth-token.guard';
-import { Request } from 'express';
-import { REQUEST_TOKEN_PAYLOAD_KEY } from 'src/auth/auth.constants';
 import { TokenPayloadParam } from 'src/auth/params/token-payload.param';
 import { TokenPayloadDTO } from 'src/auth/dto/token-payload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Persons')
 @Controller('person')
 export class PersonController {
   constructor(private readonly personService: PersonService) {}
 
   @Get()
-  @UseInterceptors(AuthTokenInterceptor)
-  findAll(@Req() req: Request) {
-    console.log(req[REQUEST_TOKEN_PAYLOAD_KEY]);
-
+  @ApiOperation({ summary: 'Get all persons' })
+  findAll() {
     return this.personService.findAll();
   }
 
-  @UseGuards(AuthTokenGuard)
-  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get one especific person' })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.personService.findOne(id);
   }
 
+  @ApiOperation({ summary: 'Create a new person' })
+  @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
   @Post()
   create(@Body() createPersonDto: CreatePersonDto) {
     return this.personService.create(createPersonDto);
   }
 
+  @ApiOperation({ summary: 'Update an existing person' })
   @UseGuards(AuthTokenGuard)
   @ApiBearerAuth()
   @Patch(':id')
@@ -62,6 +60,7 @@ export class PersonController {
     return this.personService.update(id, updatePersonDto, tokenPayload);
   }
 
+  @ApiOperation({ summary: 'Delete an existing person' })
   @UseGuards(AuthTokenGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -73,6 +72,7 @@ export class PersonController {
     return this.personService.remove(id, tokenPayload);
   }
 
+  @ApiOperation({ summary: 'Upload image to your person' })
   @UseGuards(AuthTokenGuard)
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))

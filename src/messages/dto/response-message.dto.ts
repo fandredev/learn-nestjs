@@ -1,3 +1,4 @@
+// TODO: adding swagger documentation
 export class ResponseMessageDTO {
   id: number;
   text: string;
