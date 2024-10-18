@@ -1,17 +1,24 @@
+
 # Description
 
 - Studying NestJS Fundamentals [https://docs.nestjs.com/]
 
+# Swagger Documentation
+
+![image](https://github.com/user-attachments/assets/25e58d6b-6c02-41b4-b6dd-d6e1d6c00677)
+
+
 # Stack used
 
   <a href="https://go-skill-icons.vercel.app/">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,nestjs,postgres,docker,swagger" alt="typescript,nestjs,postgres,docker,swagger" />
+    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript,nodejs,nestjs,postgres,docker,swagger" alt="typescript,nodejs,nestjs,postgres,docker,swagger" />
   </a>
 
 ### Other tools:
 
 - [Prettier](https://eslint.org/)
 - [Eslint](https://prettier.io/)
+- [asdf](https://asdf-vm.com/)
 - [pgadmin](https://www.pgadmin.org/download/)
 - [postman](https://www.postman.com/)
 - [jwt](https://jwt.io/)
@@ -50,10 +57,10 @@ git clone git@github.com:fandredev/concepts_nest.git
  pnpm run start:dev
 ```
 
-## Run linters
+## Open swagger
 
 ```
-pnpm run format && pnpm run lint
+open http://localhost:3000/docs
 ```
 
 ## :mailbox_with_no_mail: Contacts
