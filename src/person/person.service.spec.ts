@@ -5,8 +5,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import PersonBuilder from './builder/person.builder';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import PersonBuilder, { PersonDirector } from './builder/person.builder';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 
 describe(`${PersonService.name}`, () => {
   let personService: PersonService;
@@ -24,6 +28,7 @@ describe(`${PersonService.name}`, () => {
             save: jest.fn(),
             findOneBy: jest.fn(),
             find: jest.fn(),
+            preload: jest.fn(),
           },
         },
         {
@@ -51,13 +56,14 @@ describe(`${PersonService.name}`, () => {
   describe('create person', () => {
     it('should create a new person with success', async () => {
       // CreatePersonDTO
-      const createPersonDTO = new PersonBuilder().build();
+      const buildPerson = new PersonDirector().buildMe();
+
       const passwordHash = 'fake hash';
 
       const newPerson = {
         id: 1,
-        name: createPersonDTO.name,
-        email: createPersonDTO.email,
+        name: buildPerson.name,
+        email: buildPerson.email,
         password: passwordHash,
       };
 
@@ -66,17 +72,15 @@ describe(`${PersonService.name}`, () => {
       jest.spyOn(hashingService, 'hash').mockResolvedValue(passwordHash);
       jest.spyOn(personRepository, 'create').mockReturnValue(newPerson as any);
 
-      const personCreated = await personService.create(createPersonDTO);
+      const personCreated = await personService.create(buildPerson);
 
       // expected fake password is called
-      expect(hashingService.hash).toHaveBeenCalledWith(
-        createPersonDTO.password,
-      );
+      expect(hashingService.hash).toHaveBeenCalledWith(buildPerson.password);
 
       // expect correct data from person repository
       expect(personRepository.create).toHaveBeenCalledWith({
-        name: createPersonDTO.name,
-        email: createPersonDTO.email,
+        name: buildPerson.name,
+        email: buildPerson.email,
         password: passwordHash,
       });
 
@@ -111,7 +115,7 @@ describe(`${PersonService.name}`, () => {
   describe('find one person', () => {
     it('should return one person when person is found', async () => {
       const personId = 1;
-      const buildPerson = new PersonBuilder().build();
+      const buildPerson = new PersonDirector().buildMe();
 
       const personFound = {
         ...buildPerson,
@@ -150,6 +154,88 @@ describe(`${PersonService.name}`, () => {
           id: 'desc',
         },
       });
+    });
+  });
+
+  describe('update an existing person', () => {
+    it('should update an existing person if user is authorized', async () => {
+      const passwordHash = 'fake hash';
+
+      const personId = 1;
+      const buildPerson = new PersonBuilder()
+        .setName('Felipe')
+        .setEmail('emailxx@gmail.com')
+        .setPassword(passwordHash)
+        .build();
+
+      const tokenPayload = { sub: personId } as any;
+      const updatedPerson = {
+        id: personId,
+        name: 'Felipe',
+        password: passwordHash,
+      };
+
+      jest.spyOn(hashingService, 'hash').mockResolvedValue(passwordHash);
+      jest
+        .spyOn(personRepository, 'preload')
+        .mockResolvedValue(updatedPerson as any);
+      jest
+        .spyOn(personRepository, 'save')
+        .mockResolvedValue(updatedPerson as any);
+
+      const result = await personService.update(
+        personId,
+        buildPerson,
+        tokenPayload,
+      );
+
+      expect(result).toEqual(updatedPerson);
+      // expect(hashingService.hash).toHaveBeenCalledWith(passwordHash);
+      expect(personRepository.preload).toHaveBeenCalledWith({
+        id: personId,
+        name: buildPerson.name,
+        password: buildPerson.password,
+      });
+      expect(personRepository.save).toHaveBeenCalledWith({
+        id: personId,
+        name: buildPerson.name,
+        password: buildPerson.password,
+      });
+    });
+
+    it('should show an exception when person not founded', async () => {
+      const personId = 1;
+      const tokenPayload = { sub: personId } as any;
+      const updatedPerson = { name: 'Felipe' };
+
+      jest.spyOn(personRepository, 'preload').mockResolvedValue(null);
+
+      await expect(
+        personService.update(personId, updatedPerson, tokenPayload),
+      ).rejects.toThrow(
+        new NotFoundException(`Not found person with ID: ${personId}`),
+      );
+    });
+
+    it('should show an exception when person not permission to update this user', async () => {
+      const personId = 1;
+      const tokenPayload = { sub: personId + 1 } as any;
+
+      const updatedPerson = {
+        id: personId,
+        name: 'Felipe',
+        password: 'fake hash',
+      };
+
+      jest
+        .spyOn(personRepository, 'preload')
+        .mockResolvedValue(updatedPerson as any);
+
+      await expect(
+        personService.update(personId, updatedPerson, tokenPayload),
+      ).rejects.toThrow(
+        new ForbiddenException(`You are not allowed to update this user`),
+      );
     });
   });
 });
