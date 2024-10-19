@@ -6,7 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import PersonBuilder from './builder/person.builder';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 
 describe(`${PersonService.name}`, () => {
   let personService: PersonService;
@@ -22,6 +22,7 @@ describe(`${PersonService.name}`, () => {
           useValue: {
             create: jest.fn(),
             save: jest.fn(),
+            findOneBy: jest.fn(),
           },
         },
         {
@@ -102,6 +103,34 @@ describe(`${PersonService.name}`, () => {
 
       await expect(personService.create({} as any)).rejects.toThrow(
         new Error(expectedRandomError),
+      );
+    });
+  });
+
+  describe('find one person', () => {
+    it('should return one person when person is found', async () => {
+      const personId = 1;
+      const buildPerson = new PersonBuilder().build();
+
+      const personFound = {
+        ...buildPerson,
+        id: personId,
+      };
+
+      jest
+        .spyOn(personRepository, 'findOneBy')
+        .mockResolvedValue(personFound as any);
+
+      const result = await personService.findOne(personId);
+
+      expect(result).toEqual(personFound);
+    });
+
+    it('should return one person when person is NOT found', async () => {
+      const notFoundPersonId = 1;
+
+      await expect(personService.findOne(notFoundPersonId)).rejects.toThrow(
+        new NotFoundException(`Not found person with ID: ${notFoundPersonId}`),
       );
     });
   });
