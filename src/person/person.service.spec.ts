@@ -5,6 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import PersonBuilder from './builder/person.builder';
+import { ConflictException } from '@nestjs/common';
+
 describe(`${PersonService.name}`, () => {
   let personService: PersonService;
   let personRepository: Repository<Person>;
@@ -16,11 +19,16 @@ describe(`${PersonService.name}`, () => {
         PersonService,
         {
           provide: getRepositoryToken(Person),
-          useValue: {},
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+          },
         },
         {
           provide: HashProtocolService,
-          useValue: {},
+          useValue: {
+            hash: jest.fn(), // Mocka a função hash
+          },
         },
       ],
     }).compile();
@@ -36,5 +44,65 @@ describe(`${PersonService.name}`, () => {
     expect(personService).toBeDefined();
     expect(personRepository).toBeDefined();
     expect(hashingService).toBeDefined();
+  });
+
+  describe('create person', () => {
+    it('should create a new person with success', async () => {
+      // CreatePersonDTO
+      const createPersonDTO = new PersonBuilder().build();
+      const passwordHash = 'fake hash';
+
+      const newPerson = {
+        id: 1,
+        name: createPersonDTO.name,
+        email: createPersonDTO.email,
+        password: passwordHash,
+      };
+
+      // Simuling hashService.hash and personRepository.create
+
+      jest.spyOn(hashingService, 'hash').mockResolvedValue(passwordHash);
+      jest.spyOn(personRepository, 'create').mockReturnValue(newPerson as any);
+
+      const personCreated = await personService.create(createPersonDTO);
+
+      // expected fake password is called
+      expect(hashingService.hash).toHaveBeenCalledWith(
+        createPersonDTO.password,
+      );
+
+      // expect correct data from person repository
+      expect(personRepository.create).toHaveBeenCalledWith({
+        name: createPersonDTO.name,
+        email: createPersonDTO.email,
+        password: passwordHash,
+      });
+
+      // save is called with a person created
+      expect(personRepository.save).toHaveBeenCalledWith(newPerson);
+      expect(personCreated).toEqual(newPerson);
+    });
+
+    it('should failure error to create a new person', async () => {
+      jest.spyOn(personRepository, 'save').mockRejectedValue({
+        code: '23505',
+      });
+
+      await expect(personService.create({} as any)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+
+    it('should failure error to create a new person with random error', async () => {
+      const expectedRandomError = 'random error';
+
+      jest
+        .spyOn(personRepository, 'save')
+        .mockRejectedValue(new Error(expectedRandomError));
+
+      await expect(personService.create({} as any)).rejects.toThrow(
+        new Error(expectedRandomError),
+      );
+    });
   });
 });
