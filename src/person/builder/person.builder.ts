@@ -1,5 +1,5 @@
 import { CreatePersonDto } from '../dto/create-person.dto';
-import { Faker } from '@faker-js/faker';
+import { Faker, pt_BR } from '@faker-js/faker';
 
 interface PersonBuilderProps {
   setName(name?: string): this;
@@ -7,15 +7,21 @@ interface PersonBuilderProps {
   setPassword(password?: string): this;
 }
 
+interface PersonDirectorProps {
+  buildMe(): CreatePersonDto;
+}
+
 export default class PersonBuilder implements PersonBuilderProps {
   private personDTO: CreatePersonDto;
-  private faker: Faker;
+  private faker: Faker = new Faker({
+    locale: [pt_BR],
+  });
 
   constructor() {
     this.personDTO = new CreatePersonDto();
   }
 
-  setName(name: string) {
+  setName(name?: string) {
     this.personDTO.name = name || this.faker.person.firstName();
 
     return this;
@@ -38,11 +44,12 @@ export default class PersonBuilder implements PersonBuilderProps {
   }
 }
 
-export class PersonDirector {
+export class PersonDirector implements PersonDirectorProps {
   buildMe() {
     return new PersonBuilder()
       .setEmail('profissionalf.andre@gmail.com')
       .setName('Felipe')
-      .setPassword('blablabla');
+      .setPassword('blablabla')
+      .build();
   }
 }
