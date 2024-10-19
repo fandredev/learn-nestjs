@@ -19,6 +19,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { HealthModule } from 'src/health/health.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { APP_GUARD } from '@nestjs/core';
         blockDuration: 5000, // Tempo de bloqueio caso ela estore esse limite
       },
     ]),
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [

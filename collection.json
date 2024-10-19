@@ -444,6 +444,23 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Health Check System",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/health",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
