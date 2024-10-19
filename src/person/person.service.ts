@@ -107,7 +107,7 @@ export class PersonService {
     if (!person) throw new NotFoundException(`Not found person with ID: ${id}`);
 
     if (person.id !== +tokenPayload.sub) {
-      throw new ForbiddenException('You are not allowed to update this user');
+      throw new ForbiddenException('You are not allowed to delete this user');
     }
 
     return this.personRepository.remove(person);

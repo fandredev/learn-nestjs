@@ -29,6 +29,7 @@ describe(`${PersonService.name}`, () => {
             findOneBy: jest.fn(),
             find: jest.fn(),
             preload: jest.fn(),
+            remove: jest.fn(),
           },
         },
         {
@@ -235,6 +236,65 @@ describe(`${PersonService.name}`, () => {
         personService.update(personId, updatedPerson, tokenPayload),
       ).rejects.toThrow(
         new ForbiddenException(`You are not allowed to update this user`),
+      );
+    });
+  });
+
+  describe('remove an existing person', () => {
+    it('should remove an existing person', async () => {
+      const personId = 1;
+      const tokenPayload = { sub: personId } as any;
+
+      const existingPerson = {
+        id: personId,
+        name: 'Felipe',
+        password: 'fake hash',
+      };
+
+      jest
+        .spyOn(personRepository, 'findOneBy')
+        .mockResolvedValue(existingPerson as any);
+
+      jest
+        .spyOn(personRepository, 'remove')
+        .mockResolvedValue(existingPerson as any);
+
+      await personService.remove(personId, tokenPayload);
+
+      expect(personRepository.remove).toHaveBeenCalledWith(existingPerson);
+    });
+
+    it('should show an exception when person not founded', async () => {
+      const personId = 1;
+      const tokenPayload = { sub: personId } as any;
+
+      jest.spyOn(personRepository, 'preload').mockResolvedValue(null);
+
+      await expect(
+        personService.remove(personId, tokenPayload),
+      ).rejects.toThrow(
+        new NotFoundException(`Not found person with ID: ${personId}`),
+      );
+    });
+
+    it('should show an exception when person not permission to delete this user', async () => {
+      const personId = 1;
+      const tokenPayload = { sub: personId + 1 } as any;
+
+      const updatedPerson = {
+        id: personId,
+        name: 'Felipe',
+        password: 'fake hash',
+      };
+
+      jest
+        .spyOn(personRepository, 'findOneBy')
+        .mockResolvedValue(updatedPerson as any);
+
+      await expect(
+        personService.remove(personId, tokenPayload),
+      ).rejects.toThrow(
+        new ForbiddenException(`You are not allowed to delete this user`),
       );
     });
   });
