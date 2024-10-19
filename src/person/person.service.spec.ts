@@ -23,6 +23,7 @@ describe(`${PersonService.name}`, () => {
             create: jest.fn(),
             save: jest.fn(),
             findOneBy: jest.fn(),
+            find: jest.fn(),
           },
         },
         {
@@ -132,6 +133,23 @@ describe(`${PersonService.name}`, () => {
       await expect(personService.findOne(notFoundPersonId)).rejects.toThrow(
         new NotFoundException(`Not found person with ID: ${notFoundPersonId}`),
       );
+    });
+  });
+
+  describe('find all persons', () => {
+    it('should return all persons', async () => {
+      const personsMock: Person[] = [];
+
+      jest.spyOn(personRepository, 'find').mockResolvedValue(personsMock);
+
+      const result = await personService.findAll();
+
+      expect(result).toEqual(personsMock);
+      expect(personRepository.find).toHaveBeenCalledWith({
+        order: {
+          id: 'desc',
+        },
+      });
     });
   });
 });
