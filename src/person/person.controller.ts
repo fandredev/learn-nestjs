@@ -77,7 +77,7 @@ export class PersonController {
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))
   @Post('upload-picture')
-  async uploadPicure(
+  async uploadPicture(
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
